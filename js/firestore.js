@@ -1,15 +1,30 @@
 // All Firebase / Firestore code lives here (no UI code).
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getFirestore, collection, getDocs, getDoc, setDoc, query, where, FieldPath, doc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { firebaseConfig } from "../firebase-config.js";
+
+// ---- Firebase project config (the only place) ----------------------------
+export const firebaseConfig = {
+  apiKey: "AIzaSyAp6zj57o7S9ly6NCggt5Jy-dg5jDyu_sI",
+  authDomain: "newgem-b36dc.firebaseapp.com",
+  projectId: "newgem-b36dc",
+  storageBucket: "newgem-b36dc.firebasestorage.app",
+  messagingSenderId: "884079182582",
+  appId: "1:884079182582:web:0c5f72de9479c3865162d7",
+  measurementId: "G-HENX6SKBBM"
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// Analytics is optional: it must never break the app (blocked on localhost / ad-blockers).
+isSupported().then(ok => { if (ok) getAnalytics(app); }).catch(() => {});
+
 export const loadMappings = async () => (await getDocs(collection(db, 'mappings'))).docs.map(d => ({ _id: d.id, ...d.data() }));
 export const loadDispatchData = async () => (await getDocs(collection(db, 'dispatches'))).docs.map(d => ({ _id: d.id, ...d.data() }));
+
 // ---- Lazy / low-read helpers -------------------------------------------
 // The small "index" document lives in the mappings collection (id: _index)
 // so no new Firestore security rule is needed.
