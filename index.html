@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<title>Cover Letter Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.7/pizzip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.47.4/docxtemplater.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* Fallback: if cdnjs is blocked or fails, load from jsDelivr */
+if(!window.PizZip)document.write('<script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.7/dist/pizzip.min.js"><\/script>');
+if(!window.docxtemplater)document.write('<script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.47.4/build/docxtemplater.js"><\/script>');
+if(!window.XLSX)document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+</script>
+</head><body>
+
+<!-- Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+<symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 17l9 5 9-5"/></symbol>
+<symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17v4M17 19h4"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h11l4 4v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M15 10h3a2 2 0 0 1 2 2v9M3 21h18M8 7h3M8 11h3M8 15h3"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-clip" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M10.3 21a2 2 0 0 0 3.4 0"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></symbol>
+<symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+</defs></svg>
+
+<!-- LOGIN -->
+<div id="login"><div class="lcard">
+  <div class="logo xl"><svg class="ic"><use href="#i-mail"/></svg></div>
+  <h1>Cover Letter Generator</h1><p>Sign in to generate official letters from your dispatch data.</p>
+  <button id="gBtn" class="gbtn"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>Continue with Google</button>
+  <small id="lerr"></small></div></div>
+
+<div class="bgblob b1"></div><div class="bgblob b2"></div>
+
+<header class="top">
+  <button id="menuBtn" aria-label="Open menu"><svg class="ic"><use href="#i-menu"/></svg></button>
+  <div class="brand"><div class="logo"><svg class="ic"><use href="#i-mail"/></svg></div><div><h1>Cover Letter Generator</h1><p>Official covering letters, quickly and accurately</p></div></div>
+  <div class="user"><img id="avatar" class="av" alt=""></div>
+</header>
+<div id="scrim"></div>
+
+<nav id="drawer">
+  <div class="dhead"><img id="davatar" class="av" alt=""><div><b id="dname">User</b><small id="demail"></small></div></div>
+  <div class="dlabel">Workspace</div>
+  <a data-view="dashboard" class="on"><i><svg class="ic"><use href="#i-home"/></svg></i>Dashboard</a>
+  <a data-view="generate"><i><svg class="ic"><use href="#i-file"/></svg></i>Cover Letter Generator</a>
+  <a data-view="data"><i><svg class="ic"><use href="#i-table"/></svg></i>Dispatch Data</a>
+  <div class="dlabel">Admin</div>
+  <a data-view="upload" id="navUpload"><i><svg class="ic"><use href="#i-upload"/></svg></i>Upload Files</a>
+  <a data-view="index" id="navIndex"><i><svg class="ic"><use href="#i-layers"/></svg></i>Build Index</a>
+  <div class="dlabel">More</div>
+  <a data-view="ats"><i><svg class="ic"><use href="#i-sparkles"/></svg></i>ATS Generate<em>Soon</em></a>
+  <a data-view="settings"><i><svg class="ic"><use href="#i-settings"/></svg></i>Settings</a>
+  <a data-view="about"><i><svg class="ic"><use href="#i-info"/></svg></i>About</a>
+  <button id="logoutBtn" class="dlogout"><svg class="ic"><use href="#i-logout"/></svg>Sign out</button><div class="dfoot">Version 1.1</div>
+</nav>
+
+<main>
+
+<!-- DASHBOARD -->
+<section id="v-dashboard" class="view">
+  <div class="hero"><small id="hello">Welcome back</small><h2>Official letters,<br>ready in seconds.</h2><p>Pick a year, district and gram panchayat. Download the Word file or share it on WhatsApp.</p>
+    <button class="cta" data-view="generate">Generate Cover Letter <svg class="ic"><use href="#i-arrow"/></svg></button></div>
+  <div class="stats">
+    <div class="stat"><span class="si c1"><svg class="ic"><use href="#i-pin"/></svg></span><b id="stD">–</b><span>Gram Panchayats</span></div>
+    <div class="stat"><span class="si c2"><svg class="ic"><use href="#i-building"/></svg></span><b id="stM">–</b><span>Panchayat Samitis</span></div>
+    <div class="stat"><span class="si c3"><svg class="ic"><use href="#i-calendar"/></svg></span><b id="stY">–</b><span>Years</span></div></div>
+  <h3 class="sect">Quick actions</h3>
+  <div class="tiles">
+    <button class="tile" data-view="generate"><span class="ti c1"><svg class="ic"><use href="#i-file"/></svg></span><div><b>Cover Letter</b><span>AMS · Cover Letter · Intimation</span></div></button>
+    <button class="tile" data-view="data"><span class="ti c2"><svg class="ic"><use href="#i-table"/></svg></span><div><b>Dispatch Data</b><span>Search and filter records</span></div></button>
+    <button class="tile" data-view="upload" id="tileUpload"><span class="ti c3"><svg class="ic"><use href="#i-upload"/></svg></span><div><b>Upload Files</b><span>Dispatch and mapping Excel</span></div></button>
+    <button class="tile" data-view="index"><span class="ti c4"><svg class="ic"><use href="#i-layers"/></svg></span><div><b>Build Index</b><span>Keeps Firestore reads low</span></div></button>
+  </div>
+</section>
+
+<!-- GENERATOR -->
+<section id="v-generate" class="view"><div class="card"><div class="ch"><i><svg class="ic"><use href="#i-file"/></svg></i><div><h2>Cover Letter Generator</h2><p>Choose report type and location</p></div></div>
+  <div id="indexBanner"></div>
+  <div class="lab">Report type</div>
+  <div class="rtypes" id="rtypes">
+    <button class="on" data-t="ams"><i><svg class="ic"><use href="#i-clip"/></svg></i>AMS Report</button>
+    <button data-t="ybc"><i><svg class="ic"><use href="#i-file"/></svg></i>Cover Letter</button>
+    <button data-t="intim"><i><svg class="ic"><use href="#i-bell"/></svg></i>Intimation Report</button></div>
+  <label><span class="step">1</span>Year<select id="year"></select></label>
+  <div id="letterSel" class="grid3">
+  <label><span class="step">2</span>District<select id="dist"></select></label>
+  <label><span class="step">3</span>Panchayat Samiti<select id="ps"></select></label>
+  <label><span class="step">4</span>Gram Panchayat<select id="gp"></select></label></div>
+  <div id="amsBox" hidden>
+    <div class="lab"><span class="step">2</span>Panchayat Samitis — tick to build your watch list</div>
+    <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input id="amsSearch" type="search" placeholder="Search Panchayat Samiti" autocomplete="off"></div>
+    <div class="wl-bar"><button type="button" id="amsAll">Select all</button><button type="button" id="amsNone">Clear all</button><span id="amsCount" class="muted"></span></div>
+    <div id="amsPs" class="checks"></div>
+    <button type="button" id="amsSave" class="primary"><svg class="ic"><use href="#i-save"/></svg>Save Watch List</button>
+    <div class="lab"><span class="step">3</span>Saved watch list</div>
+    <div id="amsSaved" class="wl-saved"></div>
+    <div class="lab"><span class="step">4</span>Panchayat Samiti in the totals</div>
+    <div class="seg" id="amsMode"><button type="button" class="on" data-m="1">With PS</button><button type="button" data-m="2">Without PS</button></div>
+    <p class="muted hint">With PS: the PS's own row is counted in the totals. Without PS: Gram Panchayats only.</p></div>
+  <div id="info" class="info"></div><div id="warn" class="warn"></div>
+  <div id="rowsPreview"></div>
+  <button id="genBtn" class="primary big">Generate Cover Letter</button>
+  <div id="result" class="result" hidden><div class="ok"><svg class="ic"><use href="#i-check"/></svg></div><b>Your file is ready</b><small id="rname"></small>
+    <div class="row"><button id="dlBtn" class="primary"><svg class="ic"><use href="#i-download"/></svg>Download Word</button><button id="waBtn" class="wa"><svg class="ic"><use href="#i-send"/></svg>Share on WhatsApp</button></div></div>
+</div></section>
+
+<!-- DATA -->
+<section id="v-data" class="view"><div class="card"><div class="ch"><i><svg class="ic"><use href="#i-table"/></svg></i><div><h2>Dispatch Data</h2><p>Search and filter all records</p></div></div>
+  <div class="filters"><select id="fYear"></select><select id="fDist"></select><select id="fPs"></select><select id="fStatus"></select>
+  <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input id="fSearch" placeholder="Search GP or Dispatch Number"></div></div>
+  <div id="dataOut"></div></div></section>
+
+<!-- UPLOAD -->
+<section id="v-upload" class="view">
+  <div class="pagehead"><h2>Upload Files</h2><p>Add or update dispatch and mapping data. Existing records are merged, never deleted.</p></div>
+  <div class="card" id="upBox">
+    <div class="ch"><i><svg class="ic"><use href="#i-upload"/></svg></i><div><h2>Dispatch file</h2><p>Dispatch.xlsx for one financial year</p></div></div>
+    <label>Year for this file
+      <input type="text" id="upYear" list="yearList" placeholder="e.g. 2025-26" autocomplete="off">
+      <datalist id="yearList"></datalist></label>
+    <label class="drop"><input type="file" id="file" accept=".xlsx,.xls">
+      <svg class="ic"><use href="#i-upload"/></svg><b id="fileName">Click to choose or drop an .xlsx file</b><span>Dispatch Excel (.xlsx)</span></label>
+    <div id="fileInfo" class="info"></div><div id="preview" class="scroll"></div>
+    <div class="row"><button id="prevBtn" disabled><svg class="ic"><use href="#i-search"/></svg>Preview Data</button><button id="upBtn" class="primary" disabled><svg class="ic"><use href="#i-upload"/></svg>Upload / Update</button></div>
+    <div class="progress" hidden><i id="upBar"></i></div>
+    <div id="upRes" class="info"></div>
+  </div>
+
+  <div class="card gap">
+    <div class="ch"><i class="alt"><svg class="ic"><use href="#i-pin"/></svg></i><div><h2>Mapping file</h2><p>Hindi / English names for district, PS and GP</p></div></div>
+    <p class="muted">Required columns: <code>GP_EN</code> <code>GP_HI</code> <code>PS_EN</code> <code>PS_HI</code> <code>DIST_EN</code> <code>DIST_HI</code></p>
+    <label class="drop"><input type="file" id="mFile" accept=".xlsx,.xls">
+      <svg class="ic"><use href="#i-upload"/></svg><b id="mFileName">Click to choose or drop an .xlsx file</b><span>Mapping Excel (.xlsx)</span></label>
+    <div id="mInfo" class="info"></div>
+    <button id="mBtn" class="primary big" disabled><svg class="ic"><use href="#i-upload"/></svg>Upload Mapping</button>
+    <div class="progress" hidden><i id="mBar"></i></div>
+    <div id="mRes" class="info"></div>
+  </div>
+  <p class="muted note"><svg class="ic"><use href="#i-lock"/></svg>Uploading needs an admin account. After uploading, the index is updated automatically.</p>
+</section>
+
+<!-- BUILD INDEX -->
+<section id="v-index" class="view"><div class="card">
+  <div class="ch"><i><svg class="ic"><use href="#i-layers"/></svg></i><div><h2>Build Index</h2><p>One small summary document that powers every dropdown</p></div><span id="idxPill" class="pill warnpill">Not built</span></div>
+  <p class="muted">The index lists all years, districts, panchayat samitis and gram panchayats. With it, the site reads one document at start-up instead of the whole database. Run it once, and again only if data was changed outside this site.</p>
+  <div id="idxStatus" class="minis"></div>
+  <button id="buildIndexBtn" class="primary big"><svg class="ic"><use href="#i-layers"/></svg>Build Index</button>
+  <div id="idxResult" class="info"></div>
+  <p class="muted note"><svg class="ic"><use href="#i-lock"/></svg>Admin only — building the index writes to Firestore.</p>
+</div></section>
+
+<section id="v-ats" class="view"><div class="card center"><div class="logo xl"><svg class="ic"><use href="#i-sparkles"/></svg></div><h2>ATS Generate</h2><span class="chip">Coming soon</span>
+  <p class="muted">This section is reserved for the ATS generator and will arrive in a future update.</p></div></section>
+
+<section id="v-settings" class="view"><div class="card"><div class="ch"><i><svg class="ic"><use href="#i-settings"/></svg></i><div><h2>Settings</h2><p>Data cache</p></div></div>
+  <p class="muted">On start-up only a small index is read. Choosing a Panchayat Samiti loads just its data, which is then cached for 12 hours. If someone else uploaded new data, press Reload.</p><button id="reloadBtn" class="primary"><svg class="ic"><use href="#i-refresh"/></svg>Reload data from Firestore</button></div></section>
+
+<section id="v-about" class="view"><div class="card center"><div class="logo xl"><svg class="ic"><use href="#i-mail"/></svg></div><h2>Cover Letter Generator</h2>
+  <p class="muted">A digital tool for generating official covering letters from centralized dispatch data.</p><span class="chip">Version 1.1</span></div></section>
+</main>
+<div id="toasts"></div>
+<script>
+/* Fallback: if app.js fails to load, the button explains why instead of doing nothing. app.js replaces this handler. */
+(function(){var b=document.getElementById('gBtn'),l=document.getElementById('lerr');
+b.onclick=function(){l.textContent='The app did not load. Check that all files (app.js, js/ folder, firebase-config.js) are uploaded, then hard-refresh the page.';};
+window.addEventListener('error',function(e){l.textContent='Error: '+(e.message||'a file failed to load');});})();
+</script>
+<script type="module" src="app.js" onerror="document.getElementById('lerr').textContent='app.js failed to load - check the file name and location.'"></script>
+</body></html>
