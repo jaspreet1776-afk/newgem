@@ -36,14 +36,12 @@ excelInput.addEventListener('change', function(e) {
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, {type: 'array'});
             
-            // Function to map excel sheet rows into objects for Word template loops
             const mapSheetToObjects = (sheetName, keys) => {
                 let objects = [];
                 if (workbook.SheetNames.includes(sheetName)) {
                     const ws = workbook.Sheets[sheetName];
                     const json = XLSX.utils.sheet_to_json(ws, {header: 1});
                     
-                    // Start reading data from row 3 (index 3) to skip titles/headers
                     for (let i = 3; i < json.length; i++) { 
                         const row = json[i];
                         if (row && row.length > 0 && row.some(cell => cell !== undefined && cell !== null && cell !== "")) {
@@ -58,7 +56,6 @@ excelInput.addEventListener('change', function(e) {
                 return objects;
             };
 
-            // Read Accounts Sheets based on your Excel format
             finalReportData.income_items = mapSheetToObjects("आय व्यय", ["income_name", "income_amount", "expense_name", "expense_amount"]);
             finalReportData.trading_items = mapSheetToObjects("व्यापार खाता", ["purchase_name", "purchase_amount", "sale_name", "sale_amount"]);
             finalReportData.pnl_items = mapSheetToObjects("लाभ हानि", ["exp_details", "exp_amount", "inc_details", "inc_amount"]);
@@ -101,7 +98,7 @@ function checkReadyState() {
     }
 }
 
-// --- 4. Word Document Generation ---
+// --- 4. Word Document Generation (FIXED) ---
 document.getElementById('generateDocBtn').addEventListener('click', () => {
     if (!isExcelReady || !isFormReady) {
         alert("Please complete both Excel upload and Profile Form.");
@@ -116,17 +113,13 @@ document.getElementById('generateDocBtn').addEventListener('click', () => {
             return response.arrayBuffer();
         })
         .then(content => {
-            // Safe fallback using window object to avoid "not defined" errors
-            const PizZipLib = window.PizZip || PizZip;
-            const DocxTemplaterLib = window.docxtemplater || docxtemplater;
-
-            const zip = new PizZipLib(content);
-            const doc = new DocxTemplaterLib(zip, {
+            // डायरेक्ट PizZip और docxtemplater का इस्तेमाल
+            const zip = new window.PizZip(content);
+            const doc = new window.docxtemplater(zip, {
                 paragraphLoop: true,
                 linebreaks: true,
             });
 
-            // Feed the combined Excel and Form data to the Word document
             doc.render(finalReportData);
 
             const out = doc.getZip().generate({
@@ -136,7 +129,6 @@ document.getElementById('generateDocBtn').addEventListener('click', () => {
             
             const samitiName = finalReportData["Samiti_Name"] ? finalReportData["Samiti_Name"].replace(/ /g, "_") : "Report";
             
-            // Trigger the download
             window.saveAs(out, `GSS_Audit_${samitiName}.docx`);
         })
         .catch(error => {
