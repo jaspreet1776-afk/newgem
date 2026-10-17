@@ -43,16 +43,12 @@ excelInput.addEventListener('change', function(e) {
                     const ws = workbook.Sheets[sheetName];
                     const json = XLSX.utils.sheet_to_json(ws, {header: 1});
                     
-                    // Aapke Excel format (Financial_Statements_2025-26 jaita.xlsx) ke mutabik:
-                    // Row 0, 1, 2 are usually headers or titles (e.g., "आय व्यय विवरण", Dates, Column Names)
-                    // Start reading data from row 3 (index 3)
+                    // Start reading data from row 3 (index 3) to skip titles/headers
                     for (let i = 3; i < json.length; i++) { 
                         const row = json[i];
-                        // Check if row has some data
                         if (row && row.length > 0 && row.some(cell => cell !== undefined && cell !== null && cell !== "")) {
                             let obj = {};
                             keys.forEach((key, index) => { 
-                                // Clean up NaN or undefined values, map array indexes to keys
                                 obj[key] = (row[index] !== undefined && row[index] !== null && row[index] !== "NaN") ? row[index] : ""; 
                             });
                             objects.push(obj);
@@ -62,18 +58,10 @@ excelInput.addEventListener('change', function(e) {
                 return objects;
             };
 
-            // Read Accounts Sheets based on your format
-            // Col 0: आय (Income), Col 1: राशि (Amount), Col 2: व्यय (Expense), Col 3: राशि (Amount)
+            // Read Accounts Sheets based on your Excel format
             finalReportData.income_items = mapSheetToObjects("आय व्यय", ["income_name", "income_amount", "expense_name", "expense_amount"]);
-            
-            // Col 0: क्रय (Purchase), Col 1: राशि (Amount), Col 2: विक्रय (Sale), Col 3: राशि (Amount)
             finalReportData.trading_items = mapSheetToObjects("व्यापार खाता", ["purchase_name", "purchase_amount", "sale_name", "sale_amount"]);
-            
-            // Col 0: विवरण (Expenses), Col 1: राशि (Amount), Col 2: विवरण (Income), Col 3: राशि (Amount)
             finalReportData.pnl_items = mapSheetToObjects("लाभ हानि", ["exp_details", "exp_amount", "inc_details", "inc_amount"]);
-            
-            // Col 0: देनदारियाँ (Liabilities), Col 1,2: amounts, Col 3: लेनदारियाँ (Assets), Col 4,5: amounts
-            // Adjust indexes if your columns are different. Assuming Col 0, 2 are names and 1, 5 are amounts for current year.
             finalReportData.bs_items = mapSheetToObjects("तुलन पत्र", ["liability_name", "liability_amount_prev", "liability_amount", "asset_name", "asset_amount_prev", "asset_amount"]);
 
             uploadFeedback.innerHTML = `<span style="color: var(--success);">✅ Accounts Data Parsed successfully! Proceed to 'Edit Profile'.</span>`;
@@ -113,15 +101,10 @@ function checkReadyState() {
     }
 }
 
-// --- 4. Word Document Generation (FIXED) ---
+// --- 4. Word Document Generation ---
 document.getElementById('generateDocBtn').addEventListener('click', () => {
     if (!isExcelReady || !isFormReady) {
         alert("Please complete both Excel upload and Profile Form.");
-        return;
-    }
-
-    if (typeof window.PizZip === "undefined" || typeof window.docxtemplater === "undefined") {
-        alert("System Error: Required libraries did not load properly. Check internet connection.");
         return;
     }
 
@@ -133,13 +116,17 @@ document.getElementById('generateDocBtn').addEventListener('click', () => {
             return response.arrayBuffer();
         })
         .then(content => {
-            const zip = new window.PizZip(content);
-            const doc = new window.docxtemplater(zip, {
+            // Safe fallback using window object to avoid "not defined" errors
+            const PizZipLib = window.PizZip || PizZip;
+            const DocxTemplaterLib = window.docxtemplater || docxtemplater;
+
+            const zip = new PizZipLib(content);
+            const doc = new DocxTemplaterLib(zip, {
                 paragraphLoop: true,
                 linebreaks: true,
             });
 
-            // Set the data
+            // Feed the combined Excel and Form data to the Word document
             doc.render(finalReportData);
 
             const out = doc.getZip().generate({
@@ -149,7 +136,8 @@ document.getElementById('generateDocBtn').addEventListener('click', () => {
             
             const samitiName = finalReportData["Samiti_Name"] ? finalReportData["Samiti_Name"].replace(/ /g, "_") : "Report";
             
-            window.saveAs(out, `GSS_Audit_Report_${samitiName}.docx`);
+            // Trigger the download
+            window.saveAs(out, `GSS_Audit_${samitiName}.docx`);
         })
         .catch(error => {
             alert("Generation Error: " + error.message);
