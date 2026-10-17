@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GSS Accounts & Report Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     
-    <!-- Required Libraries (CDNs) -->
+    <!-- Required Libraries (CDNs in STRICT ORDER) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
@@ -17,14 +18,22 @@
         <!-- Sidebar Drawer -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>GSS Portal</h2>
+                <h2>GSS Portal 🚀</h2>
                 <button id="closeSidebar" class="mobile-only">✕</button>
             </div>
             <nav class="menu">
-                <a href="#" class="menu-item active" data-target="dashboard">📊 Dashboard</a>
-                <a href="#" class="menu-item" data-target="upload-section">📁 Upload Excel</a>
-                <a href="#" class="menu-item" data-target="form-section">📝 Edit Profile Details</a>
-                <a href="#" class="menu-item" data-target="generate-section">📄 Generate Report</a>
+                <a href="#" class="menu-item active" data-target="dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="menu-item" data-target="upload-section">
+                    <span class="icon">📁</span> Upload Excel
+                </a>
+                <a href="#" class="menu-item" data-target="form-section">
+                    <span class="icon">📝</span> Edit Profile
+                </a>
+                <a href="#" class="menu-item" data-target="generate-section">
+                    <span class="icon">📄</span> Generate Report
+                </a>
             </nav>
         </aside>
 
@@ -33,74 +42,96 @@
             <header class="topbar">
                 <button id="openSidebar" class="mobile-only">☰</button>
                 <h1>GSS Report Generator</h1>
+                <div class="user-badge">Admin</div>
             </header>
 
             <div class="content-area">
                 <!-- Dashboard Section -->
-                <section id="dashboard" class="view-section active">
-                    <h2>Dashboard</h2>
+                <section id="dashboard" class="view-section active fade-in">
+                    <div class="header-section">
+                        <h2>Welcome to GSS Portal</h2>
+                        <p class="text-muted">Automate your audit reports seamlessly.</p>
+                    </div>
                     <div class="cards-grid">
-                        <div class="card">
-                            <h3>Current Status</h3>
-                            <p id="statusText">Waiting for Excel Upload...</p>
+                        <div class="card stat-card">
+                            <h3>Status</h3>
+                            <p id="statusText" class="status-badge pending">Waiting for Excel</p>
                         </div>
-                        <div class="card">
-                            <h3>Instructions</h3>
-                            <p>Upload your GSS Accounts Excel file. The portal will extract accounts data and prompt you to fill in the missing profile details before generating the Word report.</p>
+                        <div class="card info-card">
+                            <h3>Workflow</h3>
+                            <p>1. Upload Accounts Excel<br>2. Fill Profile Info<br>3. Generate Word Report</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- Upload Section -->
-                <section id="upload-section" class="view-section hidden">
-                    <h2>Upload GSS Accounts (Excel)</h2>
-                    <div class="upload-box">
-                        <input type="file" id="excelFile" accept=".xlsx, .xls">
-                        <p>Click to browse or drag & drop your Excel file here.</p>
+                <section id="upload-section" class="view-section hidden fade-in">
+                    <div class="header-section">
+                        <h2>Upload Accounts Data</h2>
+                        <p class="text-muted">Select the Excel file containing the financial statements.</p>
                     </div>
-                    <div id="uploadFeedback" class="feedback"></div>
+                    <div class="upload-box" id="dropZone">
+                        <div class="upload-icon">📂</div>
+                        <h3>Choose a file or drag & drop it here</h3>
+                        <p class="text-muted">Excel files only (.xlsx, .xls)</p>
+                        <input type="file" id="excelFile" accept=".xlsx, .xls">
+                    </div>
+                    <div id="uploadFeedback" class="feedback-msg"></div>
                 </section>
 
-                <!-- Edit Details Section (Profile Form) -->
-                <section id="form-section" class="view-section hidden">
-                    <h2>Verify & Edit Profile Data</h2>
-                    <p style="margin-bottom:15px; color:#4b5563;">Please fill in the details below that are not present in your accounts Excel file.</p>
-                    <form id="gssForm" class="grid-form">
-                        <div class="form-group"><label>Samiti Name</label><input type="text" id="input_Samiti_Name" data-key="Samiti_Name"></div>
-                        <div class="form-group"><label>Punjiyan Number</label><input type="text" id="input_Punjiyan_Number" data-key="Punjiyan_Number"></div>
-                        <div class="form-group"><label>Date (Dinank)</label><input type="text" id="input_date" data-key="date"></div>
-                        <div class="form-group"><label>Auditor Name</label><input type="text" id="input_Auditor" data-key="Auditor"></div>
-                        <div class="form-group"><label>Vyavasthapak Name</label><input type="text" id="input_Vyavasthapak" data-key="Vyavasthapak"></div>
-                        <div class="form-group"><label>Turnover (Lakh me)</label><input type="text" id="input_Turnover" data-key="Turnover"></div>
-                        <div class="form-group"><label>Audit Fee</label><input type="text" id="input_auditfee" data-key="auditfee"></div>
-                        <div class="form-group"><label>Sadasya Sankhya (Member)</label><input type="text" id="input_Member" data-key="Member"></div>
-                        <div class="form-group"><label>Gaon/Panchayat (Village)</label><input type="text" id="input_Village" data-key="Village"></div>
-                        <div class="form-group"><label>Gat Auditor</label><input type="text" id="input_Gat_Auditor" data-key="Gat_Auditor"></div>
-                        <div class="form-group"><label>Vetan</label><input type="text" id="input_vetan" data-key="vetan"></div>
-                        <div class="form-group"><label>Committee Meetings Count</label><input type="text" id="input_Committee_Meetings_Count" data-key="Committee_Meetings_Count"></div>
-                        <div class="form-group"><label>Hissa Rashi</label><input type="text" id="input_hissa" data-key="hissa"></div>
-                        <div class="form-group"><label>Amanat Sadasya</label><input type="text" id="input_amanat" data-key="amanat"></div>
-                        <div class="form-group"><label>Amanat Vyavasthapak</label><input type="text" id="input_Vamanat" data-key="Vamanat"></div>
-                        <div class="form-group"><label>Closing Balance</label><input type="text" id="input_Closing_balance" data-key="Closing balance"></div>
-                        <div class="form-group"><label>Current Year P&L</label><input type="text" id="input_p_l" data-key="p&l"></div>
-                        <div class="form-group"><label>Last Year P&L</label><input type="text" id="input_last_p_l" data-key="last p&l"></div>
-                        <div class="form-group"><label>Est. Exp. Current</label><input type="text" id="input_Est_Exp_Current" data-key="Est_Exp_Current"></div>
-                        <div class="form-group"><label>Est. Exp. Last</label><input type="text" id="input_Est_Exp_Last" data-key="Est_Exp_Last"></div>
-                        <div class="form-group"><label>Last Cash</label><input type="text" id="input_last_cash" data-key="last cash"></div>
-                        <div class="form-group"><label>Category</label><input type="text" id="input_category" data-key="category"></div>
-                    </form>
-                    <button class="btn primary" id="saveDataBtn">Save & Proceed</button>
+                <!-- Edit Details Section -->
+                <section id="form-section" class="view-section hidden fade-in">
+                    <div class="header-section">
+                        <h2>Profile Details</h2>
+                        <p class="text-muted">Fill in the details that will be printed on the report.</p>
+                    </div>
+                    <div class="card form-card">
+                        <form id="gssForm" class="grid-form">
+                            <div class="form-group"><label>Samiti Name</label><input type="text" id="input_Samiti_Name" data-key="Samiti_Name" placeholder="e.g., नगला जैता"></div>
+                            <div class="form-group"><label>Punjiyan Number</label><input type="text" id="input_Punjiyan_Number" data-key="Punjiyan_Number"></div>
+                            <div class="form-group"><label>Date (Dinank)</label><input type="text" id="input_date" data-key="date"></div>
+                            <div class="form-group"><label>Auditor Name</label><input type="text" id="input_Auditor" data-key="Auditor"></div>
+                            <div class="form-group"><label>Vyavasthapak Name</label><input type="text" id="input_Vyavasthapak" data-key="Vyavasthapak"></div>
+                            <div class="form-group"><label>Turnover (Lakh me)</label><input type="text" id="input_Turnover" data-key="Turnover"></div>
+                            <div class="form-group"><label>Audit Fee</label><input type="text" id="input_auditfee" data-key="auditfee"></div>
+                            <div class="form-group"><label>Sadasya Sankhya (Member)</label><input type="text" id="input_Member" data-key="Member"></div>
+                            <div class="form-group"><label>Gaon/Panchayat (Village)</label><input type="text" id="input_Village" data-key="Village"></div>
+                            <div class="form-group"><label>Gat Auditor</label><input type="text" id="input_Gat_Auditor" data-key="Gat_Auditor"></div>
+                            <div class="form-group"><label>Vetan</label><input type="text" id="input_vetan" data-key="vetan"></div>
+                            <div class="form-group"><label>Committee Meetings Count</label><input type="text" id="input_Committee_Meetings_Count" data-key="Committee_Meetings_Count"></div>
+                            <div class="form-group"><label>Hissa Rashi</label><input type="text" id="input_hissa" data-key="hissa"></div>
+                            <div class="form-group"><label>Amanat Sadasya</label><input type="text" id="input_amanat" data-key="amanat"></div>
+                            <div class="form-group"><label>Amanat Vyavasthapak</label><input type="text" id="input_Vamanat" data-key="Vamanat"></div>
+                            <div class="form-group"><label>Closing Balance</label><input type="text" id="input_Closing_balance" data-key="Closing balance"></div>
+                            <div class="form-group"><label>Current Year P&L</label><input type="text" id="input_p_l" data-key="p&l"></div>
+                            <div class="form-group"><label>Last Year P&L</label><input type="text" id="input_last_p_l" data-key="last p&l"></div>
+                            <div class="form-group"><label>Est. Exp. Current</label><input type="text" id="input_Est_Exp_Current" data-key="Est_Exp_Current"></div>
+                            <div class="form-group"><label>Est. Exp. Last</label><input type="text" id="input_Est_Exp_Last" data-key="Est_Exp_Last"></div>
+                            <div class="form-group"><label>Last Cash</label><input type="text" id="input_last_cash" data-key="last cash"></div>
+                            <div class="form-group"><label>Category</label><input type="text" id="input_category" data-key="category" placeholder="e.g., अवर्गीकृत"></div>
+                        </form>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="saveDataBtn">Save Profile Data</button>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Generate Report Section -->
-                <section id="generate-section" class="view-section hidden">
-                    <h2>Generate Audit Report</h2>
-                    <div class="card">
-                        <p>Excel Data (Accounts): <span id="dataStatus">❌ Pending</span></p>
-                        <p>Profile Data (Form): <span id="formStatus">❌ Pending</span></p>
-                        <p>Word Template: <span id="templateStatus">✅ Ready (Loaded internally)</span></p>
+                <section id="generate-section" class="view-section hidden fade-in">
+                    <div class="header-section">
+                        <h2>Generate Audit Report</h2>
+                        <p class="text-muted">Review your status and download the final Word document.</p>
+                    </div>
+                    <div class="card generate-card">
+                        <ul class="checklist">
+                            <li><span class="check-icon" id="dataCheck">⭕</span> Excel Accounts Data Loaded</li>
+                            <li><span class="check-icon" id="formCheck">⭕</span> Profile Data Saved</li>
+                            <li><span class="check-icon">✅</span> Word Template Ready</li>
+                        </ul>
                         <br>
-                        <button class="btn success" id="generateDocBtn" disabled>Generate .docx Report</button>
+                        <button class="btn btn-success btn-large" id="generateDocBtn" disabled>
+                            📄 Download .docx Report
+                        </button>
                     </div>
                 </section>
             </div>
