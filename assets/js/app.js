@@ -18,16 +18,13 @@ document.querySelectorAll('.menu-item').forEach(item => {
     });
 });
 
-document.getElementById('openSidebar').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.add('open');
-});
-document.getElementById('closeSidebar').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('open');
-});
+document.getElementById('openSidebar').addEventListener('click', () => document.getElementById('sidebar').classList.add('open'));
+document.getElementById('closeSidebar').addEventListener('click', () => document.getElementById('sidebar').classList.remove('open'));
 
 // --- 2. Excel Upload & Parsing ---
 const excelInput = document.getElementById('excelFile');
 const uploadFeedback = document.getElementById('uploadFeedback');
+const dataCheck = document.getElementById('dataCheck');
 
 excelInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -45,13 +42,11 @@ excelInput.addEventListener('change', function(e) {
                 if (workbook.SheetNames.includes(sheetName)) {
                     const ws = workbook.Sheets[sheetName];
                     const json = XLSX.utils.sheet_to_json(ws, {header: 1});
-                    for (let i = 2; i < json.length; i++) { // Skip headers (assuming row 0 & 1 are headers/titles)
+                    for (let i = 2; i < json.length; i++) { // Skip row 0 & 1 (headers)
                         const row = json[i];
                         if (row.length > 0 && row.some(cell => cell !== undefined && cell !== "")) {
                             let obj = {};
-                            keys.forEach((key, index) => {
-                                obj[key] = row[index] || "";
-                            });
+                            keys.forEach((key, index) => { obj[key] = row[index] || ""; });
                             objects.push(obj);
                         }
                     }
@@ -59,21 +54,22 @@ excelInput.addEventListener('change', function(e) {
                 return objects;
             };
 
-            // Read Accounts Sheets (Based on your Excel structure)
+            // Read Accounts Sheets
             finalReportData.income_items = mapSheetToObjects("आय व्यय", ["income_name", "income_amount", "expense_name", "expense_amount"]);
             finalReportData.trading_items = mapSheetToObjects("व्यापार खाता", ["purchase_name", "purchase_amount", "sale_name", "sale_amount"]);
             finalReportData.pnl_items = mapSheetToObjects("लाभ हानि", ["exp_details", "exp_amount", "inc_details", "inc_amount"]);
             finalReportData.bs_items = mapSheetToObjects("तुलन पत्र", ["liability_name", "liability_amount", "asset_name", "asset_amount"]);
 
-            uploadFeedback.innerHTML = `<span style="color: green;">✅ Accounts Data Parsed! Now go to 'Edit Details' to fill profile info.</span>`;
-            document.getElementById('statusText').innerText = "Excel Data Loaded.";
+            uploadFeedback.innerHTML = `<span style="color: var(--success);">✅ Accounts Data Parsed successfully! Proceed to 'Edit Profile'.</span>`;
+            document.getElementById('statusText').innerText = "Excel Data Loaded";
+            document.getElementById('statusText').className = "status-badge success";
             
             isExcelReady = true;
-            document.getElementById('dataStatus').innerHTML = "✅ Ready";
+            dataCheck.innerText = "✅";
             checkReadyState();
 
         } catch (error) {
-            uploadFeedback.innerHTML = `<span style="color: red;">❌ Error parsing Excel: Check file format.</span>`;
+            uploadFeedback.innerHTML = `<span style="color: red;">❌ Error parsing Excel. Please ensure correct format.</span>`;
             console.error(error);
         }
     };
@@ -81,15 +77,17 @@ excelInput.addEventListener('change', function(e) {
 });
 
 // --- 3. Form Save Logic ---
-document.getElementById('saveDataBtn').addEventListener('click', () => {
+const formCheck = document.getElementById('formCheck');
+document.getElementById('saveDataBtn').addEventListener('click', (e) => {
+    e.preventDefault();
     const inputs = document.querySelectorAll('#gssForm input');
     inputs.forEach(input => {
         finalReportData[input.dataset.key] = input.value || "";
     });
     
     isFormReady = true;
-    document.getElementById('formStatus').innerHTML = "✅ Saved";
-    alert("Profile Data Saved! Proceed to 'Generate Report'.");
+    formCheck.innerText = "✅";
+    alert("Profile Data Saved Successfully! You can now Generate the Report.");
     checkReadyState();
 });
 
@@ -99,10 +97,16 @@ function checkReadyState() {
     }
 }
 
-// --- 4. Word Document Generation ---
+// --- 4. Word Document Generation (FIXED) ---
 document.getElementById('generateDocBtn').addEventListener('click', () => {
     if (!isExcelReady || !isFormReady) {
         alert("Please complete both Excel upload and Profile Form.");
+        return;
+    }
+
+    // Explicitly checking window variables to avoid "not defined" errors
+    if (typeof window.PizZip === "undefined" || typeof window.docxtemplater === "undefined") {
+        alert("System Error: Required libraries did not load properly. Check internet connection.");
         return;
     }
 
@@ -110,11 +114,12 @@ document.getElementById('generateDocBtn').addEventListener('click', () => {
 
     fetch(templateUrl)
         .then(response => {
-            if (!response.ok) throw new Error("Template not found at templates/gss/report-template.docx");
+            if (!response.ok) throw new Error("Could not find Word Template. Ensure it is uploaded at templates/gss/report-template.docx");
             return response.arrayBuffer();
         })
         .then(content => {
-            const zip = new PizZip(content);
+            // Safe call using window
+            const zip = new window.PizZip(content);
             const doc = new window.docxtemplater(zip, {
                 paragraphLoop: true,
                 linebreaks: true,
@@ -128,7 +133,9 @@ document.getElementById('generateDocBtn').addEventListener('click', () => {
             });
             
             const samitiName = finalReportData["Samiti_Name"] ? finalReportData["Samiti_Name"].replace(/ /g, "_") : "Report";
-            saveAs(out, `GSS_Audit_${samitiName}.docx`);
+            
+            // Safe save using window
+            window.saveAs(out, `GSS_Audit_Report_${samitiName}.docx`);
         })
         .catch(error => {
             alert("Generation Error: " + error.message);
